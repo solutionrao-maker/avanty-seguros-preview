@@ -50,7 +50,8 @@ h1 { font-size: clamp(2.1rem, 4.2vw, 3.6rem); }
 h2 { font-size: clamp(1.7rem, 3.2vw, 2.55rem); }
 h3 { font-size: 1.2rem; font-stretch: 100%; font-weight: 700; letter-spacing: -0.01em; line-height: 1.25; }
 .container { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
-.container-estreito { max-width: 760px; margin-left: 0; }
+/* coluna de leitura: o container mantém o eixo da página; só o conteúdo fica mais estreito */
+.container-estreito > * { max-width: 712px; }
 
 :focus-visible { outline: 3px solid var(--grafite); outline-offset: 3px; border-radius: 4px; }
 .bloco-escuro :focus-visible, .site-footer :focus-visible { outline-color: var(--vibrante); }
@@ -201,6 +202,8 @@ h3 { font-size: 1.2rem; font-stretch: 100%; font-weight: 700; letter-spacing: -0
 }
 .cotador:not(.is-js) .cotador-continuar, .cotador:not(.is-js) .cotador-voltar { display: none; }
 .cotador-nota { margin: 18px 0 0; font-size: 0.86rem; line-height: 1.5; max-width: none; }
+.cotador-nota a { color: var(--grafite); text-decoration: underline; text-underline-offset: 3px; }
+.cotador-nota a:hover { color: var(--verde-texto); }
 
 /* ===== Parceiras ===== */
 .partners { background: var(--creme-claro); border-top: 1px solid var(--areia); border-bottom: 1px solid var(--areia); padding: 22px 0; }
@@ -329,7 +332,10 @@ h3 { font-size: 1.2rem; font-stretch: 100%; font-weight: 700; letter-spacing: -0
 .footer-col p { margin: 0 0 9px; font-size: 0.97rem; color: inherit; }
 .footer-col a:hover { color: var(--vibrante); }
 .footer-bottom { border-top: 1px solid rgba(245, 240, 233, 0.14); padding: 22px 24px; font-size: 0.84rem; color: rgba(245, 240, 233, 0.6); }
+.footer-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 32px; }
 .footer-bottom p { margin: 0; color: inherit; max-width: none; }
+.footer-bottom a { text-decoration: underline; text-underline-offset: 3px; }
+.footer-bottom a:hover { color: var(--vibrante); }
 
 /* ===== Chat rápido (WhatsApp) ===== */
 .chat-widget { position: fixed; right: 20px; bottom: 20px; z-index: 1500; }
@@ -400,3 +406,12 @@ h3 { font-size: 1.2rem; font-stretch: 100%; font-weight: 700; letter-spacing: -0
   .footer-grid { grid-template-columns: 1fr; }
   .protecao-card p { max-width: none; }
 }
+
+/* ===== Texto corrido (política de privacidade) ===== */
+.politica h2 { font-size: clamp(1.25rem, 2.2vw, 1.55rem); margin: 40px 0 12px; }
+.politica h2:first-child { margin-top: 0; }
+.politica p a, .politica li a { color: var(--grafite); text-decoration: underline; text-decoration-color: var(--verde); text-underline-offset: 3px; }
+.politica .beneficios-list { margin-bottom: 4px; }
+.politica .beneficios-list li { font-size: 1.02rem; }
+.politica .beneficios-list li span { color: var(--texto-suave); }
+.politica .beneficios-list li b { color: var(--grafite); }
