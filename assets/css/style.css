@@ -417,3 +417,41 @@ h3 { font-size: 1.2rem; font-stretch: 100%; font-weight: 700; letter-spacing: -0
 .politica .beneficios-list li { font-size: 1.02rem; }
 .politica .beneficios-list li span { color: var(--texto-suave); }
 .politica .beneficios-list li b { color: var(--grafite); }
+
+/* ===== Blog ===== */
+.blog-grid { display: grid; grid-template-columns: minmax(0, 1fr); border-top: 1px solid var(--areia); }
+@media (min-width: 720px) { .blog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: clamp(32px, 5vw, 72px); } }
+.blog-card { display: flex; flex-direction: column; gap: 8px; padding: 26px 0; border-bottom: 1px solid var(--areia); }
+.blog-card-categoria { font-size: 0.82rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--verde-texto); }
+.blog-card h3 { margin: 0; font-stretch: 108%; font-weight: 800; font-size: 1.3rem; overflow-wrap: break-word; }
+.blog-card p { margin: 0; font-size: 1rem; }
+.blog-card-leitura { font-size: 0.9rem; color: var(--texto-suave); }
+.blog-card:hover h3 { color: var(--verde-texto); }
+
+.artigo-categoria { margin: 0 0 12px; font-size: 0.88rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--verde-texto); }
+.artigo-header h1 { overflow-wrap: break-word; }
+.artigo-header .artigo-meta { margin: 0; font-size: 0.97rem; }
+.artigo { padding: clamp(36px, 5vw, 64px) 0 clamp(60px, 8vw, 108px); }
+.artigo-resumo { margin: 0 0 32px; padding: 4px 0 4px 20px; border-left: 4px solid var(--verde); }
+.artigo-resumo strong { font-size: 0.85rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--verde-texto); }
+.artigo-resumo p { margin: 6px 0 0; font-size: 1.1rem; color: var(--grafite); }
+.artigo-corpo p, .artigo-corpo li { font-size: 1.08rem; line-height: 1.7; }
+.artigo-corpo h2 { margin: 1.8em 0 0.5em; font-size: clamp(1.45rem, 2.4vw, 1.9rem); overflow-wrap: break-word; }
+.artigo-corpo ul, .artigo-corpo ol { margin: 0 0 1.2em; padding-left: 1.2em; color: var(--texto-suave); }
+.artigo-corpo li { margin-bottom: 0.5em; }
+.artigo-corpo li strong { color: var(--grafite); }
+.artigo-corpo a, .artigo-produto a, .leia-tambem a { font-weight: 600; text-decoration: underline; text-decoration-color: var(--verde); text-underline-offset: 3px; }
+.artigo-corpo a:hover, .artigo-produto a:hover, .leia-tambem a:hover { color: var(--verde-texto); }
+.artigo-final { margin-top: 48px; }
+.artigo-cta { padding: clamp(24px, 4vw, 40px); border-radius: var(--raio-card); background: var(--floresta); color: var(--creme); }
+.artigo-cta h2 { margin: 0 0 0.4em; font-size: clamp(1.4rem, 2.6vw, 1.9rem); color: var(--creme); }
+.artigo-cta p { color: rgba(245, 240, 233, 0.82); }
+.artigo-cta .btn { margin-top: 6px; }
+.artigo-produto { margin: 28px 0 0; }
+.leia-tambem { margin-top: 36px; padding-top: 24px; border-top: 1px solid var(--areia); }
+.leia-tambem h2 { margin: 0 0 12px; font-size: 1.25rem; }
+.leia-tambem ul { margin: 0; padding: 0; list-style: none; }
+.leia-tambem li { margin: 0 0 10px; }
+.artigo-aviso { margin: 28px 0 0; font-size: 0.92rem; }
+.artigo-corpo h3 { margin: 1.4em 0 0.3em; overflow-wrap: break-word; }
+@media (min-width: 960px) { .blog-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
