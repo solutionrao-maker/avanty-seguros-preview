@@ -1,17 +1,37 @@
 (function () {
-  /* Menu no celular */
+  /* Menu no celular e dropdown "Seguros" */
   var toggle = document.getElementById('menuToggle');
   var nav = document.getElementById('mainNav');
+
+  var fecharDropdowns = function () {
+    if (!nav) return;
+    nav.querySelectorAll('.nav-dropdown[open]').forEach(function (d) { d.open = false; });
+  };
+  var definirMenu = function (aberto) {
+    nav.classList.toggle('open', aberto);
+    toggle.setAttribute('aria-expanded', aberto ? 'true' : 'false');
+    toggle.setAttribute('aria-label', aberto ? 'Fechar menu' : 'Abrir menu');
+    if (!aberto) fecharDropdowns();
+  };
+
   if (toggle && nav) {
     toggle.addEventListener('click', function () {
-      var open = nav.classList.toggle('open');
-      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      definirMenu(!nav.classList.contains('open'));
     });
     nav.querySelectorAll('a').forEach(function (link) {
-      link.addEventListener('click', function () {
-        nav.classList.remove('open');
-        toggle.setAttribute('aria-expanded', 'false');
-      });
+      link.addEventListener('click', function () { definirMenu(false); });
+    });
+    /* Esc fecha o menu e o dropdown; o foco volta para o botão do menu */
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape') return;
+      var menuAberto = nav.classList.contains('open');
+      fecharDropdowns();
+      if (menuAberto) { definirMenu(false); toggle.focus(); }
+    });
+    /* Clique ou toque fora fecha o dropdown e o menu */
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.nav-dropdown')) fecharDropdowns();
+      if (nav.classList.contains('open') && !e.target.closest('#siteHeader')) definirMenu(false);
     });
   }
 
@@ -20,24 +40,26 @@
   var chatPanel = document.getElementById('chatPanel');
   var chatClose = document.getElementById('chatPanelClose');
   if (chatToggle && chatPanel) {
-    var closeChat = function () {
-      chatPanel.classList.remove('open');
-      chatPanel.setAttribute('aria-hidden', 'true');
-      chatToggle.setAttribute('aria-expanded', 'false');
+    var definirChat = function (aberto) {
+      chatPanel.classList.toggle('open', aberto);
+      chatPanel.setAttribute('aria-hidden', aberto ? 'false' : 'true');
+      chatToggle.setAttribute('aria-expanded', aberto ? 'true' : 'false');
     };
-    var toggleChat = function () {
-      var open = chatPanel.classList.toggle('open');
-      chatPanel.setAttribute('aria-hidden', open ? 'false' : 'true');
-      chatToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    var fecharChat = function () {
+      /* se o foco estava dentro do painel, devolve ao botão antes de esconder */
+      if (chatPanel.contains(document.activeElement)) chatToggle.focus();
+      definirChat(false);
     };
-    chatToggle.addEventListener('click', toggleChat);
-    if (chatClose) chatClose.addEventListener('click', closeChat);
+    chatToggle.addEventListener('click', function () {
+      if (chatPanel.classList.contains('open')) fecharChat(); else definirChat(true);
+    });
+    if (chatClose) chatClose.addEventListener('click', fecharChat);
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') closeChat();
+      if (e.key === 'Escape' && chatPanel.classList.contains('open')) fecharChat();
     });
     document.addEventListener('click', function (e) {
       var widget = document.getElementById('chatWidget');
-      if (widget && !widget.contains(e.target)) closeChat();
+      if (widget && !widget.contains(e.target) && chatPanel.classList.contains('open')) definirChat(false);
     });
   }
 
@@ -45,9 +67,13 @@
   var cot = document.getElementById('cotador');
   if (cot) {
     cot.classList.add('is-js');
+    /* Validação própria: a nativa trava o Enter nos passos 1 e 2, onde o campo "nome" está oculto */
+    cot.noValidate = true;
     var passos = [].slice.call(cot.querySelectorAll('.cotador-passo'));
     var barras = [].slice.call(cot.querySelectorAll('.cotador-progresso span'));
     var contagem = cot.querySelector('.cotador-contagem');
+    var campo = cot.querySelector('input[name="nome"]');
+    var erro = document.getElementById('cotador-erro');
     var atual = 0;
 
     var ir = function (n, comFoco) {
@@ -84,15 +110,44 @@
       b.addEventListener('click', function () { ir(Math.max(atual - 1, 0), true); });
     });
 
+    if (campo) {
+      campo.addEventListener('input', function () {
+        campo.removeAttribute('aria-invalid');
+        if (erro) erro.hidden = true;
+      });
+    }
+
+    /* No celular o WhatsApp abre na mesma aba (a aba nova fica em branco no iOS). No computador, em aba nova;
+       o clique num link real é aceito pelos bloqueadores de pop-up, ao contrário do window.open. */
+    var abrirWhatsApp = function (url) {
+      if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) {
+        window.location.href = url;
+        return;
+      }
+      var a = document.createElement('a');
+      a.href = url; a.target = '_blank'; a.rel = 'noopener';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    };
+
     cot.addEventListener('submit', function (e) {
       e.preventDefault();
-      if (atual < passos.length - 1) return;
-      var campo = cot.querySelector('input[name="nome"]');
+      /* Enter nos passos 1 e 2 avança, como o botão "Continuar" */
+      if (atual < passos.length - 1) {
+        var avancar = passos[atual].querySelector('.cotador-continuar');
+        if (avancar && !avancar.disabled) ir(atual + 1, true);
+        return;
+      }
       var nome = campo ? campo.value.trim() : '';
-      if (!nome) { campo.focus(); return; }
+      if (!nome) {
+        if (campo) { campo.setAttribute('aria-invalid', 'true'); campo.focus(); }
+        if (erro) erro.hidden = false;
+        return;
+      }
       var msg = 'Olá! Meu nome é ' + nome + '. Quero cotar ' +
         (escolhido('tipo') || 'um seguro') + (escolhido('para') ? ' ' + escolhido('para') : '') + '.';
-      window.open('https://wa.me/5561992713443?text=' + encodeURIComponent(msg), '_blank', 'noopener');
+      abrirWhatsApp('https://wa.me/5561992713443?text=' + encodeURIComponent(msg));
     });
 
     ir(0, false);

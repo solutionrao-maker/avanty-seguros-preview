@@ -117,8 +117,12 @@ h3 { font-size: 1.2rem; font-stretch: 100%; font-weight: 700; letter-spacing: -0
 .main-nav .nav-dropdown-menu a { padding: 10px 12px; border-bottom: 0; border-radius: 8px; }
 .main-nav .nav-dropdown-menu a:hover { background: var(--creme); }
 
-.menu-toggle { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 8px; }
-.menu-toggle span { width: 24px; height: 3px; background: var(--grafite); border-radius: 2px; }
+.menu-toggle { display: none; flex-direction: column; align-items: center; justify-content: center; gap: 5px; min-width: 44px; min-height: 44px; background: none; border: none; cursor: pointer; padding: 8px; }
+.menu-toggle span { width: 24px; height: 3px; background: var(--grafite); border-radius: 2px; transition: transform 0.2s ease, opacity 0.2s ease; }
+.menu-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+.menu-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+.menu-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+.main-nav a.nav-cta { display: none; }
 
 /* ===== Hero ===== */
 .hero {
@@ -127,10 +131,13 @@ h3 { font-size: 1.2rem; font-stretch: 100%; font-weight: 700; letter-spacing: -0
   min-height: clamp(580px, 82vh, 760px);
   background: var(--creme);
   overflow: hidden;
+  container-type: inline-size; /* permite medir a largura útil (sem a barra de rolagem) com cqw */
 }
 .hero-copy {
   align-self: center;
   padding: 72px 48px 72px max(24px, calc((100vw - 1160px) / 2 + 24px));
+  /* alinha o texto com o .container; cqw não conta a barra de rolagem, ao contrário de vw */
+  padding-left: max(24px, calc((100cqw - 1160px) / 2 + 24px));
 }
 .hero h1 { font-weight: 700; font-stretch: 108%; letter-spacing: -0.025em; line-height: 1.06; font-size: clamp(2.2rem, 3.9vw, 3.5rem); margin-bottom: 0.45em; }
 .hero-lead { font-size: 1.18rem; max-width: 46ch; margin-bottom: 28px; color: var(--texto-suave); }
@@ -152,7 +159,7 @@ h3 { font-size: 1.2rem; font-stretch: 100%; font-weight: 700; letter-spacing: -0
 .hero .cotador { width: 100%; max-width: 480px; margin: 0; }
 @media (prefers-reduced-motion: no-preference) {
   .hero-fundo { animation: painelEntra 0.95s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
-  .hero .cotador { animation: cartaoEntra 0.5s ease 0.5s both; }
+  .hero .cotador { animation: cartaoEntra 0.35s ease both; }
 }
 @keyframes painelEntra {
   from { clip-path: polygon(100% 0, 100% 0, 100% 100%, 100% 100%); }
@@ -173,8 +180,15 @@ h3 { font-size: 1.2rem; font-stretch: 100%; font-weight: 700; letter-spacing: -0
 .cotador fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
 .cotador legend, .cotador-campo { display: block; padding: 0; margin-bottom: 14px; font-weight: 700; font-size: 1.1rem; color: var(--grafite); }
 .cotador-passo + .cotador-passo { margin-top: 22px; }
-.cotador.is-js .cotador-passo { display: none; margin-top: 0; }
-.cotador.is-js .cotador-passo.is-ativo { display: block; animation: passoEntra 0.25s ease both; }
+/* Com JS, os passos ficam empilhados na mesma célula da grade: o cartão tem a altura do maior passo
+   e não pula de tamanho a cada pergunta. Os passos inativos saem do foco e da leitura (visibility). */
+.cotador.is-js { display: grid; grid-template-columns: minmax(0, 1fr); }
+.cotador.is-js .cotador-topo { grid-row: 1; }
+.cotador.is-js .cotador-passo { grid-area: 2 / 1; margin-top: 0; visibility: hidden; }
+.cotador.is-js .cotador-passo.is-ativo { visibility: visible; animation: passoEntra 0.25s ease both; }
+.cotador.is-js .cotador-nota { grid-row: 3; }
+.cotador-erro { margin: 8px 0 0; font-size: 0.9rem; font-weight: 600; color: #B3261E; }
+.cotador input[aria-invalid="true"] { border-color: #B3261E; }
 @keyframes passoEntra { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .cotador.is-js .cotador-passo.is-ativo { animation: none; } }
 
@@ -197,7 +211,7 @@ h3 { font-size: 1.2rem; font-stretch: 100%; font-weight: 700; letter-spacing: -0
 }
 .cotador-acoes { display: flex; align-items: center; gap: 18px; margin-top: 18px; flex-wrap: wrap; }
 .cotador-voltar {
-  background: none; border: 0; padding: 6px 0; font: inherit; font-weight: 600; cursor: pointer;
+  background: none; border: 0; padding: 12px 8px; min-height: 44px; font: inherit; font-weight: 600; cursor: pointer;
   color: var(--texto-suave); text-decoration: underline; text-underline-offset: 3px;
 }
 .cotador:not(.is-js) .cotador-continuar, .cotador:not(.is-js) .cotador-voltar { display: none; }
@@ -259,7 +273,6 @@ h3 { font-size: 1.2rem; font-stretch: 100%; font-weight: 700; letter-spacing: -0
 .protecao-card h3 { margin: 0; font-stretch: 108%; font-weight: 800; font-size: 1.3rem; }
 .protecao-card p { margin: 0; max-width: 34ch; font-size: 1rem; }
 .protecao-card:hover h3 { color: var(--verde-texto); text-decoration: underline; text-decoration-color: var(--verde); text-decoration-thickness: 2px; text-underline-offset: 6px; }
-.protecoes-grid-3 { grid-template-columns: none; }
 
 /* ===== Por que a Avanty ===== */
 .vantagens { margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px clamp(32px, 6vw, 96px); }
@@ -334,14 +347,15 @@ h3 { font-size: 1.2rem; font-stretch: 100%; font-weight: 700; letter-spacing: -0
 .footer-col h4 { color: var(--creme); font-size: 1rem; font-stretch: 100%; font-weight: 700; margin-bottom: 16px; }
 .footer-col p { margin: 0 0 9px; font-size: 0.97rem; color: inherit; }
 .footer-col a:hover { color: var(--vibrante); }
-.footer-bottom { border-top: 1px solid rgba(245, 240, 233, 0.14); padding: 22px 24px; font-size: 0.84rem; color: rgba(245, 240, 233, 0.6); }
+/* padding-bottom maior: o botão flutuante do WhatsApp (58px + 20px) não cobre o texto do fim da página */
+.footer-bottom { border-top: 1px solid rgba(245, 240, 233, 0.14); padding: 22px 24px calc(22px + 64px + env(safe-area-inset-bottom, 0px)); font-size: 0.84rem; color: rgba(245, 240, 233, 0.6); }
 .footer-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 32px; }
 .footer-bottom p { margin: 0; color: inherit; max-width: none; }
 .footer-bottom a { text-decoration: underline; text-underline-offset: 3px; }
 .footer-bottom a:hover { color: var(--vibrante); }
 
 /* ===== Chat rápido (WhatsApp) ===== */
-.chat-widget { position: fixed; right: 20px; bottom: 20px; z-index: 1500; }
+.chat-widget { position: fixed; right: 20px; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); z-index: 1500; }
 .whatsapp-float {
   width: 58px; height: 58px; border-radius: 50%; border: 0; cursor: pointer;
   background: var(--vibrante); color: var(--grafite);
@@ -352,30 +366,39 @@ h3 { font-size: 1.2rem; font-stretch: 100%; font-weight: 700; letter-spacing: -0
 .whatsapp-float:hover { background: #2DD066; }
 .chat-panel {
   position: absolute; right: 0; bottom: calc(100% + 14px); width: min(330px, calc(100vw - 40px));
-  background: var(--creme-claro); border: 1px solid var(--areia); border-radius: 18px; overflow: hidden;
+  background: var(--creme-claro); border: 1px solid var(--areia); border-radius: 18px;
+  /* em tela baixa (celular deitado) o painel rola por dentro, em vez de sair pelo topo */
+  max-height: calc(100vh - 160px); max-height: calc(100dvh - 160px); overflow-y: auto; overscroll-behavior: contain;
   box-shadow: 0 24px 50px -20px rgba(39, 43, 40, 0.5);
-  opacity: 0; transform: translateY(12px); pointer-events: none;
-  transition: opacity 0.18s ease, transform 0.18s ease;
+  /* fechado: visibility tira os links do foco do teclado e da leitura de tela */
+  opacity: 0; transform: translateY(12px); pointer-events: none; visibility: hidden;
+  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0s linear 0.18s;
 }
-.chat-panel.open { opacity: 1; transform: none; pointer-events: auto; }
+.chat-panel.open { opacity: 1; transform: none; pointer-events: auto; visibility: visible; transition-delay: 0s; }
 .chat-panel-header { background: var(--floresta); color: var(--creme); padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .chat-panel-title { display: flex; align-items: center; gap: 10px; }
 .chat-panel-title strong { display: block; font-size: 0.97rem; }
 .chat-panel-title small { display: block; font-size: 0.78rem; opacity: 0.85; }
 .chat-online-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--vibrante); flex-shrink: 0; }
-.chat-panel-close { background: rgba(245, 240, 233, 0.16); border: 0; color: var(--creme); width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 0.8rem; flex-shrink: 0; }
+.chat-panel-close { background: rgba(245, 240, 233, 0.16); border: 0; color: var(--creme); width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 1.3rem; line-height: 1; flex-shrink: 0; }
 .chat-panel-close:hover { background: rgba(245, 240, 233, 0.3); }
 .chat-panel-body { padding: 16px; }
 .chat-bubble { background: var(--branco); border-radius: 14px 14px 14px 4px; padding: 12px 14px; font-size: 0.95rem; margin-bottom: 14px; color: var(--grafite); }
 .chat-quick-replies { display: flex; flex-direction: column; gap: 8px; }
-.chat-quick-replies a { background: var(--branco); border: 1.5px solid var(--areia); border-radius: 10px; padding: 10px 14px; font-size: 0.92rem; font-weight: 600; color: var(--grafite); transition: border-color 0.15s ease; }
+.chat-quick-replies a { background: var(--branco); border: 1.5px solid var(--areia); border-radius: 10px; padding: 13px 14px; font-size: 0.92rem; font-weight: 600; color: var(--grafite); transition: border-color 0.15s ease; }
 .chat-quick-replies a:hover { border-color: var(--grafite); }
 .chat-panel-nota { font-size: 0.78rem; margin: 12px 0 0; text-align: center; max-width: none; }
 
 /* ===== Telas menores ===== */
 @media (max-width: 900px) {
-  .main-nav { display: none; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; align-items: flex-start; gap: 16px; padding: 18px 24px 24px; background: var(--creme); border-bottom: 1px solid var(--areia); }
+  .main-nav { display: none; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; align-items: flex-start; gap: 4px; padding: 14px 24px 24px; background: var(--creme); border-bottom: 1px solid var(--areia);
+    /* menu longo (com "Seguros" aberto) rola por dentro: nenhum item fica fora da tela */
+    max-height: calc(100vh - 80px); max-height: calc(100dvh - 80px); overflow-y: auto; overscroll-behavior: contain; }
   .main-nav.open { display: flex; }
+  /* alvos de toque de pelo menos 44px */
+  .main-nav a, .nav-dropdown summary { padding: 11px 0; }
+  .main-nav .nav-dropdown-menu a { padding: 11px 12px; }
+  .main-nav a.nav-cta { display: inline-flex; margin-top: 10px; padding: 12px 24px; border-bottom: 0; }
   .menu-toggle { display: flex; }
   .nav-dropdown-menu { position: static; box-shadow: none; border: 0; background: transparent; padding: 4px 0 0 12px; }
   .btn-header { display: none; }
@@ -456,3 +479,7 @@ h3 { font-size: 1.2rem; font-stretch: 100%; font-weight: 700; letter-spacing: -0
 .artigo-aviso { margin: 28px 0 0; font-size: 0.92rem; }
 .artigo-corpo h3 { margin: 1.4em 0 0.3em; overflow-wrap: break-word; }
 @media (min-width: 960px) { .blog-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.blog-ver-todos { margin: 28px 0 0; }
+/* seção de uma frase só (atendimento em todo o Brasil): menos respiro que as demais */
+.section-compacta { padding: clamp(36px, 5vw, 56px) 0; }
+.section-compacta .section-header { margin-bottom: 0; }
