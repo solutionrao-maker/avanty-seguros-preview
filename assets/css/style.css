@@ -318,6 +318,7 @@ h3 { font-size: 1.2rem; font-stretch: 100%; font-weight: 700; letter-spacing: -0
 .beneficios-list { max-width: 720px; margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 14px; }
 .beneficios-list li { display: flex; gap: 14px; align-items: flex-start; font-size: 1.06rem; color: var(--grafite); }
 .beneficios-list li::before { margin-top: 0.5em; }
+.beneficios-list li a { color: var(--verde-texto); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
 
 .planos-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .plano-card { display: flex; flex-direction: column; padding: 4px 32px 4px 0; }
